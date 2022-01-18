@@ -1,0 +1,45 @@
+name: Creativerse
+version: 0.1
+author: Anon
+main: com.creativerse.Creativerse
+api-version: 1.14
+depend: [WorldEdit, PlotSquared]
+commands:
+  save:
+    description: Saves your plot of land that you are in onto a file.
+    usage: /<command>
+  sync:
+    description: Syncs the plot you are standing on with version stored on chain.
+    usage: /<command>
+  link:
+    description: Links an Ethereum address with a Minecraft account.
+    usage: /<command>
+  syncall:
+    description: Syncs all plots with the version stored on chain.
+    usage: /<command>
+    permission: creativerse.syncall
+    permission-message: You do not have permission!
+  autosync:
+    description: Toggles the auto sync on the plot you are standing on with the version stored on chain every time it updates.
+    usage: /<command>
+  autosyncall:
+    description: Toggles the auto sync on all plots with the version stored on the chain every time it updates. Set force to true to ignore individual auto sync plot settings.
+    usage: /<command> [force?]
+    permission: creativerse.autosyncall
+    permission-message: You do not have permission!
+  creativerse reload:
+    description: Reloads config.
+    usage: /creativerse reload
+permissions:
+  creativerse.syncall:
+    description: Allows SyncAll command
+    default: op
+  creativerse.autosyncall:
+    description: Allows AutoSyncAll command
+    default: op
+  creativerse.*:
+    description: All Creativerse commands
+    default: op
+    children:
+      creativerse.syncall: true
+      creativerse.autosyncall: true
