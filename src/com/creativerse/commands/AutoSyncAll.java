@@ -80,57 +80,61 @@ public class AutoSyncAll implements CommandExecutor {
                             hexString = hexString.substring(2);
                         }
 
-                        String idAsString = "";
-                        boolean look = true;
-                        for (int i=0; i < hexString.substring(8, 72).length(); i++) {
-                            if (hexString.substring(8, 72).charAt(i) != '0') {
-                                look = false;
+                        if (hexString.startsWith("78ee7938")) {
+                            String idAsString = "";
+                            boolean look = true;
+                            for (int i=0; i < hexString.substring(8, 72).length(); i++) {
+                                if (hexString.substring(8, 72).charAt(i) != '0') {
+                                    look = false;
+                                }
+
+                                if (!look) {
+                                    idAsString = idAsString + hexString.substring(8, 72).charAt(i);
+                                }
+
+                            }
+                            int id;
+                            if (idAsString.equals("")) {
+                                id = 0;
+                            } else {
+                                id = Integer.parseInt(idAsString, 16);
                             }
 
-                            if (!look) {
-                                idAsString = idAsString + hexString.substring(8, 72).charAt(i);
+                            byte[] byteArray = new BigInteger(hexString, 16).toByteArray();
+                            String asciiString = new String(byteArray);
+                            String[] apart = asciiString.split(";");
+                            String cid = apart[1];
+
+                            int[] p = Util.unpair(id);
+                            PlotId plotId = PlotId.of(p[0], p[1]);
+                            PlotAPI plotAPI = new PlotAPI();
+                            PlotArea plotArea = plotAPI.getPlotAreas("plotworld").iterator().next();
+                            Plot plot = plotArea.getPlot(plotId);
+
+                            byte[] fileContents = Request.getFile(IPFS_NODE, cid);
+
+                            Clipboard clipboard;
+
+                            ClipboardFormat format = ClipboardFormats.findByAlias("schem");
+                            InputStream input = new ByteArrayInputStream(fileContents);
+                            try (ClipboardReader reader = format.getReader(input)) {
+                                clipboard = reader.read();
+
+                                try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(Bukkit.getWorld("plotworld")))) {
+                                    CuboidRegion region = plot.getRegions().iterator().next();
+                                    Operation operation = new ClipboardHolder(clipboard)
+                                            .createPaste(editSession)
+                                            .to(region.getPos1())
+                                            // configure here
+                                            .build();
+                                    Operations.complete(operation);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                        }
-                        int id;
-                        if (idAsString.equals("")) {
-                            id = 0;
-                        } else {
-                            id = Integer.parseInt(idAsString, 16);
                         }
 
-                        byte[] byteArray = new BigInteger(hexString, 16).toByteArray();
-                        String asciiString = new String(byteArray);
-                        String[] apart = asciiString.split(";");
-                        String cid = apart[1];
 
-                        int[] p = Util.unpair(id);
-                        PlotId plotId = PlotId.of(p[0], p[1]);
-                        PlotAPI plotAPI = new PlotAPI();
-                        PlotArea plotArea = plotAPI.getPlotAreas("plotworld").iterator().next();
-                        Plot plot = plotArea.getPlot(plotId);
-
-                        byte[] fileContents = Request.getFile(IPFS_NODE, cid);
-
-                        Clipboard clipboard;
-
-                        ClipboardFormat format = ClipboardFormats.findByAlias("schem");
-                        InputStream input = new ByteArrayInputStream(fileContents);
-                        try (ClipboardReader reader = format.getReader(input)) {
-                            clipboard = reader.read();
-
-                            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(Bukkit.getWorld("plotworld")))) {
-                                CuboidRegion region = plot.getRegions().iterator().next();
-                                Operation operation = new ClipboardHolder(clipboard)
-                                        .createPaste(editSession)
-                                        .to(region.getPos1())
-                                        // configure here
-                                        .build();
-                                Operations.complete(operation);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
