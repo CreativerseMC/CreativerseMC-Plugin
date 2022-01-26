@@ -24,12 +24,12 @@ commands:
     usage: /<command>
   autosyncall:
     description: Toggles the auto sync on all plots with the version stored on the chain every time it updates. Set force to true to ignore individual auto sync plot settings.
-    usage: /<command> [force?]
+    usage: /<command>
     permission: creativerse.autosyncall
     permission-message: You do not have permission!
   creativerse reload:
     description: Reloads config.
-    usage: /creativerse reload
+    usage: /<command>
 permissions:
   creativerse.syncall:
     description: Allows SyncAll command

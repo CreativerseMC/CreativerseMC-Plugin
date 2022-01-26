@@ -15,6 +15,4 @@ public class Util {
 
         return new int[] {x,y};
     }
-
-
 }

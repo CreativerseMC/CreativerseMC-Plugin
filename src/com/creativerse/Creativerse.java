@@ -2,9 +2,7 @@ package com.creativerse;
 
 import com.creativerse.commands.*;
 import com.creativerse.files.CustomConfig;
-import com.plotsquared.core.PlotSquared;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Creativerse extends JavaPlugin {
@@ -21,12 +19,14 @@ public class Creativerse extends JavaPlugin {
         CustomConfig.get().options().copyDefaults(true);
         CustomConfig.save();
 
+        AutoSyncAll.run();
 
         getCommand("save").setExecutor(new Save());
         getCommand("sync").setExecutor(new Sync());
         getCommand("link").setExecutor(new Link());
         getCommand("syncall").setExecutor(new SyncAll());
         getCommand("creativerse reload").setExecutor(new Reload());
+        getCommand("autosyncall").setExecutor(new AutoSyncAll());
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Creativerse is enabled.");
     }
 
