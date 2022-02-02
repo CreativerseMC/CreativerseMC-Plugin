@@ -3,6 +3,7 @@ package com.creativerse.commands;
 import com.creativerse.Creativerse;
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
+import com.creativerse.files.Database;
 import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
@@ -94,13 +95,20 @@ public class Link implements CommandExecutor {
                 PlotId plotId = PlotId.of(p[0], p[1]);
                 Plot plot = plotArea.getPlot(plotId);
                 try {
-                    plot.claim(plotPlayer, false, "", true,  false);
+                    plot.claim(plotPlayer, false, "", true, false);
+                } catch (IllegalStateException e) {
+                    // If plot already is claimed do nothing
                 } catch (Exception e) {
                     plot.setOwner(player.getUniqueId());
                     e.printStackTrace();
                 }
 
             }
+
+            Database.execute("INSERT OR REPLACE INTO USERS (UUID,ADDRESS) VALUES ('" +
+                    player.getUniqueId().toString() + "', '" +
+                    address + "');");
+            Database.commit();
 
             player.sendMessage(ChatColor.GREEN + "Your account is now linked with " + ChatColor.YELLOW + address);
             player.sendMessage(ChatColor.GREEN + "You can use " + ChatColor.YELLOW + "/plot home " + ChatColor.GREEN + "to teleport to your plot.");

@@ -2,6 +2,7 @@ package com.creativerse.commands;
 
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
+import com.creativerse.files.Database;
 import com.creativerse.requests.Request;
 import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.plot.Plot;
@@ -37,38 +38,16 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class AutoSyncAll implements CommandExecutor {
+public class AutoSyncAll {
     private static String NODE_URL = CustomConfig.get().getString("ETH-Node");
     private static String CONTRACT_ADDRESS = CustomConfig.get().getString("Contract");
     private static String IPFS_NODE = CustomConfig.get().getString("IPFS-Node");
 
     private static Subscription sub;
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(command.getName().equalsIgnoreCase("autosyncall"))) { return true; }
-        String autoSyncAllToggle = CustomConfig.get().getString("AutoSyncAll");
-
-        if (autoSyncAllToggle.toLowerCase().equals("true")) {
-            CustomConfig.get().set("AutoSyncAll", "false");
-            sub.cancel();
-            sender.sendMessage("Auto Sync disabled on all plots.");
-        } else if (autoSyncAllToggle.toLowerCase().equals("false")) {
-            CustomConfig.get().set("AutoSyncAll", "true");
-            sender.sendMessage("Auto Sync enabled on all plots.");
-            run();
-        } else {
-            sender.sendMessage(ChatColor.RED + "An unknown error occured. Please check that \"AutoSyncAll\" is set to \"true\" or \"false\" in the config.yml");
-        }
-
-        return true;
-    };
-
     public static void run() {
-        String autoSyncAllToggle = CustomConfig.get().getString("AutoSyncAll");
-        if (autoSyncAllToggle.toLowerCase().equals("true")) {
-            System.out.println("auto sync is enabled!");
 
             Web3j web3 = Web3j.build(new HttpService(NODE_URL));
             sub = (Subscription) web3.transactionFlowable().subscribe(tx -> {
@@ -110,6 +89,14 @@ public class AutoSyncAll implements CommandExecutor {
                             PlotAPI plotAPI = new PlotAPI();
                             PlotArea plotArea = plotAPI.getPlotAreas("plotworld").iterator().next();
                             Plot plot = plotArea.getPlot(plotId);
+                            try {
+                                String mcUUID = Database.query("SELECT * FROM USERS WHERE ADDRESS='" +
+                                        tx.getFrom() + "';")[0];
+                                plot.claim(plotAPI.wrapPlayer(UUID.fromString(mcUUID)),false, "", true, false);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
 
                             byte[] fileContents = Request.getFile(IPFS_NODE, cid);
 
@@ -141,6 +128,5 @@ public class AutoSyncAll implements CommandExecutor {
                 }
 
             });
-        }
     }
 }
