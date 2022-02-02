@@ -15,6 +15,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -92,7 +93,9 @@ public class AutoSyncAll {
                             try {
                                 String mcUUID = Database.query("SELECT * FROM USERS WHERE ADDRESS='" +
                                         tx.getFrom() + "';")[0];
-                                plot.claim(plotAPI.wrapPlayer(UUID.fromString(mcUUID)),false, "", true, false);
+                                plot.claim(plotAPI.wrapPlayer(UUID.fromString(mcUUID)), false, "", true, false);
+                            } catch (IllegalStateException e) {
+                                // If user does not exist in db do nothing
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -109,6 +112,7 @@ public class AutoSyncAll {
 
                                 try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(Bukkit.getWorld("plotworld")))) {
                                     CuboidRegion region = plot.getRegions().iterator().next();
+                                    editSession.setMask(new RegionMask(region));
                                     Operation operation = new ClipboardHolder(clipboard)
                                             .createPaste(editSession)
                                             .to(region.getPos1())

@@ -18,6 +18,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -88,9 +89,9 @@ public class Sync implements CommandExecutor{
             InputStream input = new ByteArrayInputStream(fileContents);
             try (ClipboardReader reader = format.getReader(input)) {
                 clipboard = reader.read();
-
                 try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(player.getLocation().getWorld()))) {
                     CuboidRegion region = plot.getRegions().iterator().next();
+                    editSession.setMask(new RegionMask(region));
                     Operation operation = new ClipboardHolder(clipboard)
                             .createPaste(editSession)
                             .to(region.getPos1())
