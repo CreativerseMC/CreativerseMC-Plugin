@@ -28,6 +28,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.json.JSONObject;
 import org.web3j.contracts.eip721.generated.ERC721Metadata;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -79,7 +80,10 @@ public class Sync implements CommandExecutor{
         int p = Util.pair(plot.getId().getX(), plot.getId().getY());
         BigInteger pBig = BigInteger.valueOf(p);
         try {
-            String cid = contract.tokenURI(pBig).send();
+            String jsonCid = contract.tokenURI(pBig).send();
+//            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+            JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
+            String cid = metadata.getString("schem").substring(7);
 
             byte[] fileContents = Request.getFile(IPFS_NODE, cid);
 
@@ -103,6 +107,7 @@ public class Sync implements CommandExecutor{
             }
 
         } catch (Exception e) {
+            player.sendMessage(ChatColor.RED + "ERROR: Token metadata could not be read. You may need to save your plot with /save again. If this error persists, please contact a Creativerse developer.");
             e.printStackTrace();
         }
 

@@ -17,7 +17,6 @@ public class Creativerse extends JavaPlugin {
         CustomConfig.get().addDefault("NFT-Storage-API-Key", "");
         CustomConfig.get().addDefault("Transaction-Domain", "https://CreativerseMC.github.io");
         CustomConfig.get().addDefault("Contract", "0x7e0bc040a8d9d2d9bb1f940aab85de00923657e0");
-        CustomConfig.get().addDefault("AutoSyncAll", "false");
         CustomConfig.get().addDefault("SQLite", Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/database/");
         CustomConfig.get().options().copyDefaults(true);
         CustomConfig.save();

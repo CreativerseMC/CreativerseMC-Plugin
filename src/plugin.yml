@@ -1,6 +1,6 @@
 name: Creativerse
-version: 0.1
-author: Anon
+version: 0.4
+author: phaze jeff
 main: com.creativerse.Creativerse
 api-version: 1.14
 depend: [WorldEdit, PlotSquared]
@@ -27,14 +27,10 @@ commands:
     usage: /<command>
 permissions:
   creativerse.syncall:
-    description: Allows SyncAll command
-    default: op
-  creativerse.autosyncall:
-    description: Allows AutoSyncAll command
+    description: Allows SyncAll command and allows Sync command on any plot.
     default: op
   creativerse.*:
     description: All Creativerse commands
     default: op
     children:
       creativerse.syncall: true
-      creativerse.autosyncall: true

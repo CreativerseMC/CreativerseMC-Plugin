@@ -1,5 +1,6 @@
 package com.creativerse.commands;
 
+import com.creativerse.Nft;
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
 import com.creativerse.requests.Request;
@@ -15,6 +16,7 @@ import com.sk89q.worldedit.extent.clipboard.io.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.file.Files;
 
 public class Save implements CommandExecutor {
     String DOMAIN = CustomConfig.get().getString("Transaction-Domain");
@@ -37,7 +40,6 @@ public class Save implements CommandExecutor {
         Player player = (Player) sender;
         PlotAPI plotAPI = new PlotAPI();
 
-
         PlotPlayer plotPlayer = plotAPI.wrapPlayer(player.getUniqueId());
         Plot plot = plotPlayer.getCurrentPlot();
 
@@ -50,6 +52,8 @@ public class Save implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "You don't own this plot.");
             return true;
         }
+
+        player.sendMessage("Compiling plot...");
 
         CuboidRegion region = plot.getRegions().iterator().next();
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -66,7 +70,7 @@ public class Save implements CommandExecutor {
         }
 
 
-        File file = new File("plot-" + System.currentTimeMillis() + ".schem");
+        File file = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/plot-" + System.currentTimeMillis() + ".schem");
 
         try {
             file.createNewFile();
@@ -88,11 +92,17 @@ public class Save implements CommandExecutor {
 
         // Uploads to NFT.Storage
         try {
-            String response = Request.upload(API_KEY, file);
-            JSONObject object = new JSONObject(response);
-            String cid = object.getJSONObject("value").getString("cid");
-            file.delete();
-            player.sendMessage("Send a transaction using this link: " + DOMAIN + "/?tokenId=" + p + "&cid=" + cid);
+            JSONObject metadata = Nft.createJSON(API_KEY, p, file);
+            File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/metadata-" + System.currentTimeMillis() + ".json");
+            Files.writeString(metadataFile.toPath(), metadata.toString(4));
+
+            JSONObject response = new JSONObject(Request.upload(API_KEY, metadataFile));
+            String cid = response.getJSONObject("value").getString("cid");
+
+            file.deleteOnExit();
+            metadataFile.deleteOnExit();
+            player.sendMessage("Compiled!");
+            player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/?tokenId=" + p + "&cid=" + cid);
         } catch (Exception e) {
             e.printStackTrace();
         }

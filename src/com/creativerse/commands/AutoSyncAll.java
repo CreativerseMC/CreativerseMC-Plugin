@@ -25,6 +25,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.json.JSONObject;
 import org.reactivestreams.Subscription;
 import org.web3j.abi.DefaultFunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
@@ -83,7 +84,7 @@ public class AutoSyncAll {
                             byte[] byteArray = new BigInteger(hexString, 16).toByteArray();
                             String asciiString = new String(byteArray);
                             String[] apart = asciiString.split(";");
-                            String cid = apart[1];
+                            String jsonCid = apart[1];
 
                             int[] p = Util.unpair(id);
                             PlotId plotId = PlotId.of(p[0], p[1]);
@@ -100,7 +101,9 @@ public class AutoSyncAll {
                                 e.printStackTrace();
                             }
 
-
+                            // jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+                            JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
+                            String cid = metadata.getString("schem").substring(7);
                             byte[] fileContents = Request.getFile(IPFS_NODE, cid);
 
                             Clipboard clipboard;

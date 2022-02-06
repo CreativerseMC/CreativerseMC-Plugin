@@ -1,5 +1,6 @@
 package com.creativerse.commands;
 
+import com.creativerse.Creativerse;
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
 import com.creativerse.requests.Request;
@@ -25,6 +26,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.json.JSONObject;
 import org.web3j.contracts.eip721.generated.ERC721Enumerable;
 import org.web3j.contracts.eip721.generated.ERC721Metadata;
 import org.web3j.protocol.Web3j;
@@ -68,28 +70,37 @@ public class SyncAll implements CommandExecutor {
                 PlotArea plotArea = plotAPI.getPlotAreas("plotworld").iterator().next();
                 Plot plot = plotArea.getPlot(plotId);
 
-                String cid = contractMetadata.tokenURI(tokenId).send();
+                String jsonCid = contractMetadata.tokenURI(tokenId).send();
+                try {
+//                    jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+                    JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
+                    String cid = metadata.getString("schem").substring(7);
 
-                byte[] fileContents = Request.getFile(IPFS_NODE, cid);
+                    byte[] fileContents = Request.getFile(IPFS_NODE, cid);
+                    Clipboard clipboard;
 
-                Clipboard clipboard;
+                    ClipboardFormat format = ClipboardFormats.findByAlias("schem");
+                    InputStream input = new ByteArrayInputStream(fileContents);
+                    try (ClipboardReader reader = format.getReader(input)) {
+                        clipboard = reader.read();
 
-                ClipboardFormat format = ClipboardFormats.findByAlias("schem");
-                InputStream input = new ByteArrayInputStream(fileContents);
-                try (ClipboardReader reader = format.getReader(input)) {
-                    clipboard = reader.read();
-
-                    try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(Bukkit.getWorld("plotworld")))) {
-                        CuboidRegion region = plot.getRegions().iterator().next();
-                        editSession.setMask(new RegionMask(region));
-                        Operation operation = new ClipboardHolder(clipboard)
-                                .createPaste(editSession)
-                                .to(region.getPos1())
-                                // configure here
-                                .build();
-                        Operations.complete(operation);
+                        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(Bukkit.getWorld("plotworld")))) {
+                            CuboidRegion region = plot.getRegions().iterator().next();
+                            editSession.setMask(new RegionMask(region));
+                            Operation operation = new ClipboardHolder(clipboard)
+                                    .createPaste(editSession)
+                                    .to(region.getPos1())
+                                    // configure here
+                                    .build();
+                            Operations.complete(operation);
+                        }
                     }
+                } catch (Exception e) {
+                    Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "Warning: Plot #" + tokenId + " metadata has invalid data that cannot be read.");
+                    continue;
                 }
+
+
             }
             sender.sendMessage(ChatColor.GREEN + "Plots synced!");
         } catch (Exception e) {
