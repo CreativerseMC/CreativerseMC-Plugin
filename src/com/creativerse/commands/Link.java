@@ -48,7 +48,7 @@ public class Link implements CommandExecutor {
 
         if (args.length == 0) {
             player.sendMessage(ChatColor.GREEN + "Please click the link to link your Ethereum address:");
-            player.sendMessage(DOMAIN + "/link?uuid=" + player.getUniqueId());
+            player.sendMessage(DOMAIN + "/link/" + player.getUniqueId());
             player.sendMessage(ChatColor.GREEN + "Then use "+ ChatColor.YELLOW + "/link <signature> " + ChatColor.GREEN + "to finish linking account.");
             return true;
         }

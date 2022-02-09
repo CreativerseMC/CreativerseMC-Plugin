@@ -102,7 +102,7 @@ public class Save implements CommandExecutor {
             file.deleteOnExit();
             metadataFile.deleteOnExit();
             player.sendMessage("Compiled!");
-            player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/?tokenId=" + p + "&cid=" + cid);
+            player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/save/" + p + "/" + cid);
         } catch (Exception e) {
             e.printStackTrace();
         }
