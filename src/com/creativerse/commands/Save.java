@@ -103,7 +103,7 @@ public class Save implements CommandExecutor {
             metadataFile.deleteOnExit();
             player.sendMessage("Compiled!");
             player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/save/" + p + "/" + cid);
-        } catch (Exception e) {
+        } catch (Exception e) { // I know this isn't proper exception handling ill deal with this later ok
             e.printStackTrace();
         }
 

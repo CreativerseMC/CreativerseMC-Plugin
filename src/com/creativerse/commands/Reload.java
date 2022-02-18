@@ -9,10 +9,11 @@ public class Reload implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(command.getName().equalsIgnoreCase("creativerse reload"))) {
+            CustomConfig.reload();
             return true;
         }
 
-        CustomConfig.reload();
+
         return true;
     }
 }

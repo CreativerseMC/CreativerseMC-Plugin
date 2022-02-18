@@ -81,7 +81,7 @@ public class Sync implements CommandExecutor{
         BigInteger pBig = BigInteger.valueOf(p);
         try {
             String jsonCid = contract.tokenURI(pBig).send();
-//            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
             JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
             String cid = metadata.getString("schem").substring(7);
 
