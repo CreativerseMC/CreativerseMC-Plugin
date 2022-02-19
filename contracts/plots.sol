@@ -29,28 +29,6 @@ contract Plot is ERC721URIStorage, ERC721Enumerable, ERC721Royalty {
     constructor() ERC721("Creativerse Plot", "PLOT") {
         admin = msg.sender;
         owner = msg.sender;
-
-        // Giveaway winners & Early Testers
-        _safeMint(0xD1BEcF2CFb20861b6a9d7A6AE9ec2C69Bd1543dC, 11);
-        _setTokenURI(11, "bafkreigriulcnrd4vtcesvi7pbyu7wbq3jzr5ee6uzjairwvlb24dvknz4");
-        _safeMint(0xD1BEcF2CFb20861b6a9d7A6AE9ec2C69Bd1543dC, 12);
-        _setTokenURI(12, "bafkreifyhqywmgq3d4cmymv2v5qplrzhhdgkhqb4spnlnuiinko2i7xhaa");
-        _safeMint(0xD1BEcF2CFb20861b6a9d7A6AE9ec2C69Bd1543dC, 17);
-        _setTokenURI(17, "bafkreihmem36jziwdybitwybntq2zjdmddx234yqqa3hln2hwv5bxlj4ca");
-        _safeMint(0x43FB19a15ae5Ee754FBef90db08e28dDd647523E, 1624);
-        _setTokenURI(1624, "bafkreifhempdqqjxzbxmlwmig4idpzf7uvklkhyqs7url7sf6e27mhc7ui");
-        _safeMint(0x282D99ed8BffF8ac4781916F8acA111dC1d328c2, 0);
-        _setTokenURI(0, "bafkreiekdbopmevxqof3k5ukyicuxzwcpgjm4hdcqnw7xv24sgrdly3eym");
-        _safeMint(0x89ad2a1f98266C760F585c56A661E7334F8f1d91, 1302);
-        _setTokenURI(1302, "bafkreigxecvnxlwxv6332murdqdwranhoe4blpklbrv6zrtrs3defohd2u");
-        _safeMint(0xB829Cf1B05380f62f0580bf73259F48EDA1fFc82, 903);
-        _setTokenURI(903, "bafkreiczyfyva4t6kbik3tdk7dyilvryek3duphoxjvkdagnbfogzzesre");
-        _safeMint(0xbFE18e498DAc767B4128Cbfe45519D4BEE0EAB52, 4900);
-        _setTokenURI(4900, "bafkreieevv6jw4gqbswnmscbewepkymettz5key6fzz7qwb6rrey54snp4");
-        _safeMint(0x210e299fDDD868F39243eB510cdA54414fD4e0BF, 4254);
-        _setTokenURI(4254, "bafkreiecz55blbmd65sfjnxpit5sw2ozsl4j7frwd2eezh4ntsjkyngtla");
-        _safeMint(0xbFE18e498DAc767B4128Cbfe45519D4BEE0EAB52, 4999);
-        _setTokenURI(4999, "bafkreibdydpre5ipyr74mdeoymjxsg6uvkat3it7p4vyuots5ngshoqtne");
     }
 
     function getTokenLockInfo(uint256 tokenId) public view returns (uint256, uint256, uint256, uint256) {
