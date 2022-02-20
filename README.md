@@ -1,5 +1,5 @@
 # CreativerseMC-Plugin
-Minecraft 1.17.1 Java Spigot/Paper Plugin
+Minecraft 1.18.1 Java Spigot/Paper Plugin
 
 # Dependencies to run on server
 WorldEdit, AsyncWorldEdit, and PlotSquared plugins must be installed. This has only been tested on Paper 1.17.1
@@ -8,6 +8,7 @@ On top of that, the plugin needs to be connected to an IPFS node and an Ethereum
 # Dependencies to build from source:
 - [PlotSquared v6](https://github.com/IntellectualSites/PlotSquared)
 - [WorldEdit](https://github.com/EngineHub/WorldEdit)
-- [Web3J](https://github.com/web3j/web3j)
+- [Web3J](https://github.com/web3j/web3j) core & contracts
 - org.json
-- Spigot API 1.17.1
+- xerial.ewlite.jdbc
+- Spigot API 1.18.1
