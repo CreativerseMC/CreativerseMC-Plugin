@@ -3,6 +3,7 @@ package com.creativerse.commands;
 import com.creativerse.Nft;
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
+import com.creativerse.renderer.McTo3D;
 import com.creativerse.requests.Request;
 import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.player.PlotPlayer;
@@ -55,6 +56,7 @@ public class Save implements CommandExecutor {
 
         player.sendMessage("Compiling plot...");
 
+
         CuboidRegion region = plot.getRegions().iterator().next();
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
@@ -69,43 +71,49 @@ public class Save implements CommandExecutor {
             e.printStackTrace();
         }
 
-
-        File file = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/plot-" + System.currentTimeMillis() + ".schem");
+        String name = String.valueOf(System.currentTimeMillis());
+        File schemFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/plot-" + name + ".schem");
 
         try {
-            file.createNewFile();
+            schemFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-        try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+        try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(schemFile))) {
             writer.write(clipboard);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        new Thread(() -> {
+            McTo3D.create3DModel(region, name);
+            File gltfFile = McTo3D.convertObjToGltf(name);
 
-        int p = Util.pair(plot.getId().getX(), plot.getId().getY());
-        int[] xy = Util.unpair(p);
+            int p = Util.pair(plot.getId().getX(), plot.getId().getY());
+            int[] xz = Util.unpair(p);
 
-        // Uploads to NFT.Storage
-        try {
-            JSONObject metadata = Nft.createJSON(API_KEY, p, file);
-            File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/metadata-" + System.currentTimeMillis() + ".json");
-            Files.writeString(metadataFile.toPath(), metadata.toString(4));
+            // Uploads to NFT.Storage
+            try {
+                JSONObject metadata = Nft.createJSON(API_KEY, p, schemFile, gltfFile, Long.parseLong(name), xz);
+                File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/metadata-" + System.currentTimeMillis() + ".json");
+                Files.writeString(metadataFile.toPath(), metadata.toString(4));
 
-            JSONObject response = new JSONObject(Request.upload(API_KEY, metadataFile));
-            String cid = response.getJSONObject("value").getString("cid");
+                JSONObject response = new JSONObject(Request.upload(API_KEY, metadataFile));
+                String cid = response.getJSONObject("value").getString("cid");
 
-            file.deleteOnExit();
-            metadataFile.deleteOnExit();
-            player.sendMessage("Compiled!");
-            player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/save/" + p + "/" + cid);
-        } catch (Exception e) { // I know this isn't proper exception handling ill deal with this later ok
-            e.printStackTrace();
-        }
+                schemFile.deleteOnExit();
+                metadataFile.deleteOnExit();
+                player.sendMessage("Compiled!");
+                player.sendMessage(ChatColor.GREEN + "Send a transaction using this link to save: " + ChatColor.YELLOW + DOMAIN + "/save/" + p + "/" + cid);
+            } catch (Exception e) { // I know this isn't proper exception handling ill deal with this later ok
+                e.printStackTrace();
+            }
+        }).start();
+
+
 
         return true;
     }

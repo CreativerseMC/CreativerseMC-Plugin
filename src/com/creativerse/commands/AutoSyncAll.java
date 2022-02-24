@@ -52,7 +52,13 @@ public class AutoSyncAll {
     public static void run() {
 
             Web3j web3 = Web3j.build(new HttpService(NODE_URL));
-            sub = (Subscription) web3.transactionFlowable().subscribe(tx -> {
+            sub = (Subscription) web3.transactionFlowable().doOnError(e -> {
+                if (e instanceof NullPointerException) {
+                    // Block is null due to fork
+                } else {
+                    e.printStackTrace();
+                }
+            }).retry().subscribe(tx -> {
                 try {
                     if (!(tx.getTo() == null) && tx.getTo().equals(CONTRACT_ADDRESS.toLowerCase())) {
                         String hexString = tx.getInput();
@@ -101,7 +107,7 @@ public class AutoSyncAll {
                                 e.printStackTrace();
                             }
 
-                            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+//                            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
                             JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
                             String cid = metadata.getString("schem").substring(7);
                             byte[] fileContents = Request.getFile(IPFS_NODE, cid);
@@ -135,5 +141,10 @@ public class AutoSyncAll {
                 }
 
             });
+
+    }
+
+    public static void stop() {
+        sub.cancel();
     }
 }
