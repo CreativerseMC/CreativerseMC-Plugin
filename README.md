@@ -12,3 +12,6 @@ On top of that, the plugin needs to be connected to an IPFS node and an Ethereum
 - org.json
 - xerial.ewlite.jdbc
 - Spigot API 1.18.1
+
+## Note if you are building from source:
+The assets folder that contains the textures for Minecraft need to be included in the src folder for 3D files to be created. You can get the assets folder from the Minecraft jar file (Found in .minecraft/versions folder)
