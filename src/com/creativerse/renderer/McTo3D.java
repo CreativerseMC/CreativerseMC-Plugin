@@ -17,7 +17,7 @@ public class McTo3D {
 
     public static File create3DModel(CuboidRegion region, String name) {
         // Creates 3D model of plot for NFT thumbnail
-        Options.worldDir = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../plot-world");
+        Options.worldDir = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../plotworld");
         Options.outputDir = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache");
         Options.minX = region.getPos1().getX(); Options.minY = region.getMinimumY(); Options.minZ = region.getPos1().getZ();
         Options.maxX = region.getPos2().getX() + 1; Options.maxY = region.getMaximumY(); Options.maxZ = region.getPos2().getZ() + 1;
