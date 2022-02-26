@@ -4,6 +4,7 @@ import com.creativerse.Nft;
 import com.creativerse.Util;
 import com.creativerse.files.CustomConfig;
 import com.creativerse.renderer.McTo3D;
+import com.creativerse.renderer.Render;
 import com.creativerse.requests.Request;
 import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.player.PlotPlayer;
@@ -89,7 +90,8 @@ public class Save implements CommandExecutor {
             e.printStackTrace();
         }
         new Thread(() -> {
-            McTo3D.create3DModel(region, name);
+        	McTo3D.create3DModel(region, name);
+            new Render().objToPng();
             File gltfFile = McTo3D.convertObjToGltf(name);
 
             int p = Util.pair(plot.getId().getX(), plot.getId().getY());
