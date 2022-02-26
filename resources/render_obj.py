@@ -1,4 +1,4 @@
-import bpy, math, sys, os
+import bpy, math, sys
 
 # Get .obj file path
 argv = sys.argv
@@ -23,12 +23,6 @@ plot = bpy.data.objects[0]
 plot.select_set(True)
 
 # Move camera to have a good view
-#cameraZ = camera.location.z
-#plot.select_set(False)
-#camera.select_set(True)
-#camera.location.x = 2 * plot.dimensions.x
-#camera.location.y = -2 * plot.dimensions.z
-#camera.location.z = 2 * plot.dimensions.y
 camera.rotation_euler = [math.radians(54.7), math.radians(0), math.radians(45)]
 bpy.ops.view3d.camera_to_view_selected()
 
