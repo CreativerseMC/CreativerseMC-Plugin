@@ -3,7 +3,7 @@ import bpy, math, sys
 # Get .obj file path
 argv = sys.argv
 objPath = argv[argv.index("--") + 1]  # get all args after "--"
-objName = objPath.split("/")[-1]
+outputPath = argv[argv.index("--") + 2] 
 
 # Create new scene
 bpy.ops.scene.new(type="NEW")
@@ -30,6 +30,7 @@ bpy.ops.view3d.camera_to_view_selected()
 bpy.ops.object.light_add(type="SUN", location=camera.location, rotation=camera.rotation_euler)
 
 # Render to PNG
-bpy.context.scene.render.filepath = "cache/render.png"
+bpy.context.scene.render.filepath = outputPath
+bpy.context.scene.render.film_transparent = True
 bpy.ops.render.render(write_still=True)
 bpy.ops.wm.quit_blender()
