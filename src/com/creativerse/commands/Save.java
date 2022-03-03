@@ -33,6 +33,7 @@ public class Save implements CommandExecutor {
     String DOMAIN = CustomConfig.get().getString("Transaction-Domain");
     String IPFS_NODE = CustomConfig.get().getString("IPFS-Node");
     String API_KEY = CustomConfig.get().getString("NFT-Storage-API-Key");
+    String SHOULD_RENDER_PNG = CustomConfig.get().getString("RenderPNG");
 
 
     @Override
@@ -91,7 +92,11 @@ public class Save implements CommandExecutor {
         }
         new Thread(() -> {
         	McTo3D.create3DModel(region, name);
-            new Render().objToPng();
+            File pngFile = null;
+            if (SHOULD_RENDER_PNG.equals("true")) {
+                pngFile = new Render().objToPng(name);
+            }
+
             File gltfFile = McTo3D.convertObjToGltf(name);
 
             int p = Util.pair(plot.getId().getX(), plot.getId().getY());
@@ -99,7 +104,7 @@ public class Save implements CommandExecutor {
 
             // Uploads to NFT.Storage
             try {
-                JSONObject metadata = Nft.createJSON(API_KEY, p, schemFile, gltfFile, Long.parseLong(name), xz);
+                JSONObject metadata = Nft.createJSON(API_KEY, p, schemFile, gltfFile, pngFile, Long.parseLong(name), xz);
                 File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/metadata-" + System.currentTimeMillis() + ".json");
                 Files.writeString(metadataFile.toPath(), metadata.toString(4));
 

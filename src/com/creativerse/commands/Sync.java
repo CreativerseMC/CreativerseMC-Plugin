@@ -79,37 +79,39 @@ public class Sync implements CommandExecutor{
 
         int p = Util.pair(plot.getId().getX(), plot.getId().getY());
         BigInteger pBig = BigInteger.valueOf(p);
-        try {
-            String jsonCid = contract.tokenURI(pBig).send();
-            jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
-            JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
-            String cid = metadata.getString("schem").substring(7);
+        new Thread(() -> {
+            try {
+                String jsonCid = contract.tokenURI(pBig).send();
+                jsonCid = jsonCid.substring(7); // Removes 'ipfs://'
+                JSONObject metadata = new JSONObject(new String(Request.getFile(IPFS_NODE, jsonCid)));
+                String cid = metadata.getString("schem").substring(7);
 
-            byte[] fileContents = Request.getFile(IPFS_NODE, cid);
+                byte[] fileContents = Request.getFile(IPFS_NODE, cid);
 
-            Clipboard clipboard;
+                Clipboard clipboard;
 
-            ClipboardFormat format = ClipboardFormats.findByAlias("schem");
-            InputStream input = new ByteArrayInputStream(fileContents);
-            try (ClipboardReader reader = format.getReader(input)) {
-                clipboard = reader.read();
-                try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(player.getLocation().getWorld()))) {
-                    CuboidRegion region = plot.getRegions().iterator().next();
-                    editSession.setMask(new RegionMask(region));
-                    Operation operation = new ClipboardHolder(clipboard)
-                            .createPaste(editSession)
-                            .to(region.getPos1())
-                            // configure here
-                            .build();
-                    Operations.complete(operation);
-                    player.sendMessage(ChatColor.GREEN + "Plot synced!");
+                ClipboardFormat format = ClipboardFormats.findByAlias("schem");
+                InputStream input = new ByteArrayInputStream(fileContents);
+                try (ClipboardReader reader = format.getReader(input)) {
+                    clipboard = reader.read();
+                    try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(player.getLocation().getWorld()))) {
+                        CuboidRegion region = plot.getRegions().iterator().next();
+                        editSession.setMask(new RegionMask(region));
+                        Operation operation = new ClipboardHolder(clipboard)
+                                .createPaste(editSession)
+                                .to(region.getPos1())
+                                // configure here
+                                .build();
+                        Operations.complete(operation);
+                        player.sendMessage(ChatColor.GREEN + "Plot synced!");
+                    }
                 }
-            }
 
-        } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "ERROR: Token metadata could not be read. You may need to save your plot with /save again. If this error persists, please contact a Creativerse developer.");
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                player.sendMessage(ChatColor.RED + "ERROR: Token metadata could not be read. You may need to save your plot with /save again. If this error persists, please contact a Creativerse developer.");
+                e.printStackTrace();
+            }
+        }).start();
 
         return true;
     }

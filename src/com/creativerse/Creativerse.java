@@ -29,6 +29,7 @@ public class Creativerse extends JavaPlugin {
         CustomConfig.get().addDefault("Transaction-Domain", "https://www.creativersemc.com");
         CustomConfig.get().addDefault("Contract", "0xe608791A1B4ed2BA44d482b68feFe102a720a4BB");
         CustomConfig.get().addDefault("SQLite", Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/database/");
+        CustomConfig.get().addDefault("RenderPNG", "false");
         CustomConfig.get().options().copyDefaults(true);
         CustomConfig.save();
 

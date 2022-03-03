@@ -21,14 +21,9 @@ import javax.imageio.ImageIO;
 import org.bukkit.Bukkit;
 import org.jmc.Options;
 
-import de.javagl.obj.Obj;
-import de.javagl.obj.ObjData;
-import de.javagl.obj.ObjReader;
-import de.javagl.obj.ObjUtils;
-
 public class Render {
 
-	public void objToPng() {
+	public File objToPng(String name) {
 		InputStream inputStream;
 		try {
 			// Extract Python script from jar
@@ -39,8 +34,8 @@ public class Render {
 		    Files.copy(link, file.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			
 			// Render with Blender
-		    String outputPath = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/render.png").getAbsolutePath();
-			String cmd = "blender --background --python cache/render_obj.py -- cache/" + Options.objFileName + " " + outputPath;
+		    String outputPath = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/" + name + ".png").getAbsolutePath();
+			String cmd = "blender --background --python cache/render_obj.py -- cache/" + name + ".obj " + outputPath;
 			Runtime run = Runtime.getRuntime();
 			Process pr = run.exec(cmd);
 			pr.waitFor();
@@ -51,25 +46,28 @@ public class Render {
 			}
 			
 			// Change padding here
-			addPadding(outputPath, 20);
-			System.out.println("Saved PNG in "+outputPath);
+//			addPadding(outputPath, 20);
+			return new File(outputPath);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			return null;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
 	}
-	
+
+	// Was going to add padding to the image and then decided against it, but leaving this function here just in case idk
 	public void addPadding(String imgPath, int padding) {
 		BufferedImage img = null;
 		try {
 		    img = ImageIO.read(new File(imgPath));
 		    
-		    // Reduce image size to add padding to the top and the bottom
-		    // while keeping a 16/9 aspect ratio
+		    // Reduce image size to add padding to the top and the bottom and cuts off edges
 		    int targetHeight = img.getHeight();
 		    int targetWidth = img.getWidth();
 		    int resizeHeight = targetHeight - 2*padding;
