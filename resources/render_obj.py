@@ -3,7 +3,7 @@ import bpy, math, sys
 # Get .obj file path
 argv = sys.argv
 objPath = argv[argv.index("--") + 1]  # get all args after "--"
-outputPath = argv[argv.index("--") + 2] 
+outputPath = argv[argv.index("--") + 2]
 
 # Create new scene
 bpy.ops.scene.new(type="NEW")
@@ -27,10 +27,18 @@ camera.rotation_euler = [math.radians(54.7), math.radians(0), math.radians(45)]
 bpy.ops.view3d.camera_to_view_selected()
 
 # Add a light at the same location as the camera
-bpy.ops.object.light_add(type="SUN", location=camera.location, rotation=camera.rotation_euler)
+lightrot = camera.rotation_euler.copy()
+lightrot.x = math.radians(60)
+lightrot.z = math.radians(60)
+bpy.ops.object.light_add(type="SUN", location=camera.location, rotation=lightrot)
 
 # Render to PNG
 bpy.context.scene.render.filepath = outputPath
 bpy.context.scene.render.film_transparent = True
+bpy.context.scene.render.resolution_percentage = 400
+bpy.context.scene.render.use_border = True
+bpy.context.scene.render.use_crop_to_border = True
+bpy.context.scene.render.border_max_x = 0.75
+bpy.context.scene.render.border_min_x = 0.25
 bpy.ops.render.render(write_still=True)
 bpy.ops.wm.quit_blender()
