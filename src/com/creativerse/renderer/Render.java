@@ -27,14 +27,14 @@ public class Render {
 		InputStream inputStream;
 		try {
 			// Extract Python script from jar
-			String filePath = Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/render_obj.py";
+			String filePath = Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/render_obj.py";
 			File file = new File(filePath);
 		    InputStream link;
 			link = (getClass().getResourceAsStream("/render_obj.py"));
 		    Files.copy(link, file.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			
 			// Render with Blender
-		    String outputPath = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/" + name + ".png").getAbsolutePath();
+		    String outputPath = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/" + name + ".png").getAbsolutePath();
 			String cmd = "blender --background --python cache/render_obj.py -- cache/" + name + ".obj " + outputPath;
 			Runtime run = Runtime.getRuntime();
 			Process pr = run.exec(cmd);

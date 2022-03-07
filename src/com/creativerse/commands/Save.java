@@ -74,7 +74,7 @@ public class Save implements CommandExecutor {
         }
 
         String name = String.valueOf(System.currentTimeMillis());
-        File schemFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/plot-" + name + ".schem");
+        File schemFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/plot-" + name + ".schem");
 
         try {
             schemFile.createNewFile();
@@ -90,8 +90,10 @@ public class Save implements CommandExecutor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String worldName = player.getLocation().getWorld().getName();
         new Thread(() -> {
-        	McTo3D.create3DModel(region, name);
+        	McTo3D.create3DModel(region, name, worldName);
             File pngFile = null;
             if (SHOULD_RENDER_PNG.equals("true")) {
                 pngFile = new Render().objToPng(name);
@@ -105,7 +107,7 @@ public class Save implements CommandExecutor {
             // Uploads to NFT.Storage
             try {
                 JSONObject metadata = Nft.createJSON(API_KEY, p, schemFile, gltfFile, pngFile, Long.parseLong(name), xz);
-                File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder() + "/../../cache/metadata-" + System.currentTimeMillis() + ".json");
+                File metadataFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/metadata-" + System.currentTimeMillis() + ".json");
                 Files.writeString(metadataFile.toPath(), metadata.toString(4));
 
                 JSONObject response = new JSONObject(Request.upload(API_KEY, metadataFile));
