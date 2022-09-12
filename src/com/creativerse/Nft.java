@@ -21,10 +21,14 @@ public class Nft {
         String cid = responseObj.getJSONObject("value").getString("cid");
         json.put("schem", "ipfs://" + cid);
 
-        response = Request.upload(API_KEY, gltf);
-        responseObj = new JSONObject(response);
-        cid = responseObj.getJSONObject("value").getString("cid");
-        json.put("animation_url", "ipfs://" + cid + "?filename=animation.gltf");
+        if (gltf != null) {
+            response = Request.upload(API_KEY, gltf);
+            responseObj = new JSONObject(response);
+            cid = responseObj.getJSONObject("value").getString("cid");
+            json.put("animation_url", "ipfs://" + cid + "?filename=animation.gltf");
+        }
+
+
 
         if (png == null) {
             json.put("image", "ipfs://" + logoCid + "?filename=image.png");

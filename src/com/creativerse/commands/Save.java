@@ -34,6 +34,7 @@ public class Save implements CommandExecutor {
     String IPFS_NODE = CustomConfig.get().getString("IPFS-Node");
     String API_KEY = CustomConfig.get().getString("NFT-Storage-API-Key");
     String SHOULD_RENDER_PNG = CustomConfig.get().getString("RenderPNG");
+    String SHOULD_RENDER_3D = CustomConfig.get().getString("Enable3D");
 
 
     @Override
@@ -99,7 +100,11 @@ public class Save implements CommandExecutor {
                 pngFile = new Render().objToPng(name);
             }
 
-            File gltfFile = McTo3D.convertObjToGltf(name);
+            File gltfFile = null;
+            if (SHOULD_RENDER_3D.equals("true")) {
+                gltfFile = McTo3D.convertObjToGltf(name);
+            }
+
 
             int p = Util.pair(plot.getId().getX(), plot.getId().getY());
             int[] xz = Util.unpair(p);

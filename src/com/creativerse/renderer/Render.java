@@ -18,10 +18,12 @@ import java.nio.file.StandardCopyOption;
 
 import javax.imageio.ImageIO;
 
+import com.creativerse.files.CustomConfig;
 import org.bukkit.Bukkit;
 import org.jmc.Options;
 
 public class Render {
+	private String BLENDER_CMD = CustomConfig.get().getString("blender-cmd");
 
 	public File objToPng(String name) {
 		InputStream inputStream;
@@ -35,7 +37,7 @@ public class Render {
 			
 			// Render with Blender
 		    String outputPath = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/" + name + ".png").getAbsolutePath();
-			String cmd = "blender --background --python cache/render_obj.py -- cache/" + name + ".obj " + outputPath;
+			String cmd = BLENDER_CMD + " --background --python cache/render_obj.py -- cache/" + name + ".obj " + outputPath;
 			Runtime run = Runtime.getRuntime();
 			Process pr = run.exec(cmd);
 			pr.waitFor();

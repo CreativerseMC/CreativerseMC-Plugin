@@ -1,5 +1,6 @@
 package com.creativerse.renderer;
 
+import com.creativerse.Creativerse;
 import com.creativerse.commands.Save;
 
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -8,10 +9,12 @@ import io.github.oguzhancevik.obj2gltf.obj.BufferStrategy;
 import io.github.oguzhancevik.obj2gltf.obj.GltfWriteType;
 import io.github.oguzhancevik.obj2gltf.obj.IndicesComponentType;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginLogger;
 import org.jmc.ObjExporter;
 import org.jmc.Options;
 
 import java.io.File;
+import java.util.logging.Level;
 
 public class McTo3D {
 
@@ -47,7 +50,14 @@ public class McTo3D {
                 .inputMtlFileName(name).outputFilePath(path).outputFileName(name)
                 .bufferStrategy(BufferStrategy.BUFFER_PER_FILE).indicesComponentType(IndicesComponentType.GL_UNSIGNED_SHORT).gltfWriteType(GltfWriteType.EMBEDDED).build();
 
-        convertObjToGltf.convert();
+        try {
+            convertObjToGltf.convert();
+        } catch (NumberFormatException e) {
+            PluginLogger.getLogger("Creativerse").log(Level.SEVERE, "Error running /save. This is likely due to your device language, please change your device language to English (United States). For more information, check this tweet: https://twitter.com/CreativerseMC/status/1500634245844254721");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         File gltfFile = new File(Bukkit.getServer().getPluginManager().getPlugin("Creativerse").getDataFolder().getAbsoluteFile().getParentFile().getParentFile() + "/cache/" + name + ".gltf");
         gltfFile.deleteOnExit();
